@@ -1,9 +1,23 @@
 {% extends 'myapp/base.html' %}
 {% block content %}
 <h2>My Applications</h2>
+
+<form method="get">
+    <label>Filter by status:</label>
+    <select name="status" onchange="this.form.submit()">
+        <option value="">All</option>
+        <option value="pending" {% if filter_status == 'pending' %}selected{% endif %}>Pending</option>
+        <option value="approved" {% if filter_status == 'approved' %}selected{% endif %}>Approved</option>
+        <option value="rejected" {% if filter_status == 'rejected' %}selected{% endif %}>Rejected</option>
+    </select>
+</form>
+
 <ul>
     {% for app in applications %}
-        <li>{{ app.job.title }} at {{ app.job.company_name }} - Applied on {{ app.applied_at }}</li>
+        <li>
+            {{ app.job.title }} at {{ app.job.company_name }} -
+            <strong>{{ app.status|title }}</strong> - Applied on {{ app.applied_at }}
+        </li>
     {% empty %}
         <li>No applications submitted.</li>
     {% endfor %}

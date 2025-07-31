@@ -45,17 +45,43 @@ def post_job(request):
         form = JobForm()
     return render(request, 'myapp/job_form.html', {'form': form})
 
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
 @login_required
 def applications_list(request, job_id):
-    job = Job.objects.get(id=job_id)
+    job = get_object_or_404(Job, id=job_id, posted_by=request.user)
     applications = Application.objects.filter(job=job)
-    return render(request, 'myapp/applications_list.html', {'applications': applications, 'job': job})
+
+    # Handle status update
+    if request.method == 'POST':
+        app_id = request.POST.get('app_id')
+        new_status = request.POST.get('status')
+        app = get_object_or_404(Application, id=app_id, job=job)
+        if new_status in ['approved', 'rejected']:
+            app.status = new_status
+            app.save()
+        return HttpResponseRedirect(request.path_info)
+
+    return render(request, 'myapp/applications_list.html', {
+        'job': job,
+        'applications': applications,
+    })
+
 
 #applicant views
 @login_required
 def applicant_dashboard(request):
-    apps = Application.objects.filter(applicant=request.user)
-    return render(request, 'myapp/applicant_dashboard.html', {'applications': apps})
+    filter_status = request.GET.get('status')
+    applications = Application.objects.filter(applicant=request.user)
+    if filter_status in ['pending', 'approved', 'rejected']:
+        applications = applications.filter(status=filter_status)
+    return render(request, 'myapp/applicant_dashboard.html', {
+        'applications': applications,
+        'filter_status': filter_status
+    })
 
 def job_list(request):
     query = request.GET.get('q')

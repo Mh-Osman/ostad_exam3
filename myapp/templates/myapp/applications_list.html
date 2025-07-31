@@ -1,11 +1,30 @@
 {% extends 'myapp/base.html' %}
 {% block content %}
 <h2>Applications for {{ job.title }}</h2>
-<ul>
-    {% for app in applications %}
-        <li>{{ app.applicant.username }} - Applied at {{ app.applied_at }}</li>
-    {% empty %}
-        <li>No applications yet.</li>
-    {% endfor %}
-</ul>
+
+{% for app in applications %}
+<div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+    <p><strong>Applicant:</strong> {{ app.applicant.username }}</p>
+    <p><strong>Resume:</strong> <a href="{{ app.resume.url }}" target="_blank">Download</a></p>
+    <p><strong>Cover Letter:</strong> {{ app.cover_letter }}</p>
+    <p>
+        <strong>Status:</strong>
+        <span class="status-label {{ app.status }}">{{ app.status|title }}</span>
+    </p>
+    <form method="post" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="app_id" value="{{ app.id }}">
+        <input type="hidden" name="status" value="approved">
+        <button type="submit">Approve</button>
+    </form>
+    <form method="post" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="app_id" value="{{ app.id }}">
+        <input type="hidden" name="status" value="rejected">
+        <button type="submit">Reject</button>
+    </form>
+</div>
+{% empty %}
+<p>No applications yet.</p>
+{% endfor %}
 {% endblock %}
