@@ -1,0 +1,9 @@
+{% extends 'myapp/base.html' %}
+{% block content %}
+<h2>Welcome to the Job Portal</h2>
+{% if user.is_authenticated %}
+    <p>You are logged in as {{ user.username }}</p>
+{% else %}
+    <p>Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a>.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,39 @@
+<!-- myapp/templates/myapp/base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Job Portal</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <nav>
+        <a href="{% url 'home' %}">Home</a>
+        {% if user.is_authenticated %}
+        {% if user.groups.first.name == 'employer' %}
+        <a href="{% url 'employer_dashboard' %}">Dashboard</a>
+        <a href="{% url 'post_job' %}">Post Job</a>
+        {% else %}
+        <a href="{% url 'job_list' %}">Browse Jobs</a>
+        <a href="{% url 'applicant_dashboard' %}">My Applications</a>
+        {% endif %}
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" style="background:none;border:none;color:white;cursor:pointer;">Logout</button>
+        </form>
+
+
+        {% else %}
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'register' %}">Register</a>
+        {% endif %}
+    </nav>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+
+</html>

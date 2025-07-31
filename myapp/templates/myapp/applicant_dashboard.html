@@ -1,0 +1,11 @@
+{% extends 'myapp/base.html' %}
+{% block content %}
+<h2>My Applications</h2>
+<ul>
+    {% for app in applications %}
+        <li>{{ app.job.title }} at {{ app.job.company_name }} - Applied on {{ app.applied_at }}</li>
+    {% empty %}
+        <li>No applications submitted.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

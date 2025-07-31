@@ -1,0 +1,14 @@
+{% extends 'myapp/base.html' %}
+{% block content %}
+<h2>Employer Dashboard</h2>
+<ul>
+    {% for job in jobs %}
+        <li>
+            {{ job.title }} - {{ job.company_name }} -
+            <a href="{% url 'applications_list' job.id %}">View Applications</a>
+        </li>
+    {% empty %}
+        <li>No jobs posted yet.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
